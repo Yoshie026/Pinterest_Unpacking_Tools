@@ -1,14 +1,26 @@
 # moodboard-unpack
 
-A Claude skill that turns a set of visual references into a
-brand-experience brief — *world*, mood, named color theme, sonic
-palette, materials, and product directions. For brand and product
-design work, where you want a creative brief, not a description.
+Turn a Pinterest board (or any set of visual references) into a
+structured brand-experience brief — *world*, mood, named color theme,
+sonic palette, materials, and product directions. For brand and product
+design work where you want a creative brief, not a description.
 
-## What you get
+Two ways to use it:
 
-Drag 4–20 images into a Claude chat, ask for a mood unpack, and you'll
-get something like this:
+| | **Skill** | **Connector** |
+|---|---|---|
+| Setup | Copy 1 file | Install a `.dxt`, paste 1 token |
+| Input | Drag images in | Type `/unpack <board-name>` |
+| Pinterest API | No | Yes — auto-fetches your boards |
+| Works in | Claude.ai, Desktop, Code | Claude Desktop only |
+| Friction | Zero | 5 minutes once |
+
+Pick the skill if you want to share it widely. Pick the connector if you
+want to type a board name and have it just work.
+
+---
+
+## Example output
 
 ```
 WORLD
@@ -20,7 +32,6 @@ unhurried · sun-soaked · monastic · salt-bleached · generous · grounded
 
 HASHTAGS
 #slowliving #wabisabi #linenandlimestone #earthtoned #coastalminimal
-#mediterraneanmodern
 
 COLOR THEME — "Bleached Coast"
 sand #E8DCC8 · terracotta #C97B4F · olive shadow #5C6B4A · bone #F5EFE3
@@ -30,12 +41,10 @@ SONIC PALETTE
 - Distant cicadas, low and continuous
 - Linen rustling against itself
 - A single ceramic mug set on tile
-- One nylon-string guitar, very far away
 References: Nils Frahm "Says", Khruangbin, Greek summer field recordings
 
 MATERIALS & TEXTURES
 lime-washed plaster · rough linen · unglazed terracotta · weathered teak
-· hammered brass
 
 SENSES BEYOND VISION
 - Warmth on stone, slightly cooler shade
@@ -43,63 +52,108 @@ SENSES BEYOND VISION
 - Pleasingly heavy ceramics
 
 PRODUCT / BRAND DIRECTIONS
-- Packaging: matte recycled paperboard, deep terracotta print, no gloss
+- Packaging: matte recycled paperboard, terracotta print, never gloss
 - Voice: short sentences. Confident, generous, never urgent.
 - Avoid: chrome, neon, sans-serifs that look "tech"
 
 ADJACENT MOODS TO EXPLORE NEXT
 - Monastic — strip ornament, push toward rule and repetition
 - Agrarian — dirt, baskets, ledger paper, working hands
-- Taverna — louder, communal, candlelit, less restraint
+- Taverna — louder, communal, candlelit
 ```
 
-You can paste this into a brief, feed the COLOR THEME into Midjourney,
-or hand it to a creative team.
+---
 
-## Install
+## Path A — Skill (no install)
 
-### Claude Desktop or Claude Code
+### Install
+
+**Claude Desktop / Claude Code:**
 
 ```bash
 mkdir -p ~/.claude/skills/moodboard-unpack
 cp moodboard-unpack/SKILL.md ~/.claude/skills/moodboard-unpack/
 ```
 
-No restart needed.
+**Claude.ai (web):** Settings → Capabilities → Skills → Create new skill
+→ paste contents of `moodboard-unpack/SKILL.md`.
 
-### Claude.ai (web)
+### Use
 
-Settings → Capabilities → Skills → **Create new skill** → paste the
-contents of `moodboard-unpack/SKILL.md`.
+In any new Claude chat:
 
-## Use
+1. Drag 4–20 images in (Pinterest screenshots, saved pins, anything)
+2. Type *"unpack this for product packaging"* (focus optional)
 
-Open any new Claude conversation and either:
+That's it. Triggers on *unpack*, *moodboard*, *what's the vibe*,
+*give me a brief*.
 
-- **Drag images in** (best). Save 4–20 pins from a Pinterest board to
-  your desktop, drop them in, and ask: *"Unpack this for product
-  packaging."* The focus is optional.
-- **Paste a public board URL**. Claude will try to fetch it; Pinterest's
-  HTML is sparse so this sometimes returns too little — if so, drag the
-  images in instead.
+---
 
-That's it. Skill triggers on phrases like *unpack*, *moodboard*,
-*what's the vibe*, *give me a brief*.
+## Path B — Connector (Pinterest auto-fetch)
 
-## Share
+The connector is a Claude Desktop Extension that talks to the Pinterest
+API for you. Once installed, you can refer to boards by name and Claude
+fetches the pins itself.
 
-The skill is one markdown file. Send it to a friend, or point them at
-this repo. No accounts, no auth, no hosting. They drop it in and it
-works.
+### Install
 
-## What's in this repo
+1. **Get an access token** — go to
+   <https://developers.pinterest.com/apps/> → your app → generate a
+   token with scopes `boards:read,pins:read`. (Or run
+   `cd connector && npm install && npm run auth` if you'd rather use
+   the OAuth flow.)
+2. **Install the extension** — open `connector/pinterest-mcp.dxt` (or
+   build a fresh one with `cd connector && npm run dxt`)
+3. **Paste the token** into the install dialog and click Install
+
+### Use
+
+In Claude Desktop:
 
 ```
-moodboard-unpack/SKILL.md   # the skill itself
-README.md                   # this file
+/unpack metal_material_inspo
 ```
 
-The git history also contains an earlier MCP-connector implementation
-(`git log` to see). It worked, but required Node + a Pinterest developer
-account + OAuth — too much friction for the value. The skill keeps the
-useful 90% (the synthesis) and drops the painful 10% (the API plumbing).
+or natural language:
+
+> Unpack my metal_material_inspo board for product packaging
+
+The connector also exposes:
+
+- `/board <name>` — quick board view (metadata + thumbnails)
+- Tools: `list_boards`, `get_board`, `get_pin_images`, `board_brief`
+  (if you want to drive things manually)
+
+The access token lasts ~30 days. When it expires you'll see Pinterest
+errors in chat — get a fresh token and reconfigure the connector.
+
+---
+
+## Repo layout
+
+```
+moodboard-unpack/
+  SKILL.md            # Path A — the skill
+connector/
+  src/                # Path B — MCP server source
+  manifest.json       # DXT manifest
+  pinterest-mcp.dxt   # Built extension (after `npm run dxt`)
+README.md
+```
+
+## Sharing
+
+- **Skill** — send the `SKILL.md` file. Recipient drops it in
+  `~/.claude/skills/moodboard-unpack/`. Done.
+- **Connector** — send the `.dxt` file *plus* tell the recipient to
+  create their own Pinterest app and generate a token. There's no way
+  around per-user Pinterest credentials without hosting a remote MCP
+  server, which costs money.
+
+For a low-bar public release, the skill is the answer. The connector is
+for power users.
+
+## License
+
+MIT.
