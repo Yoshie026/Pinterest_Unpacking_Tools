@@ -1,94 +1,105 @@
 # moodboard-unpack
 
-A Claude skill that turns a mood board, Pinterest board, or set of
-visual references into a structured brand-experience brief — *world*,
-mood adjectives, hashtags, named color theme, sonic palette, materials,
-and product/brand directions.
+A Claude skill that turns a set of visual references into a
+brand-experience brief — *world*, mood, named color theme, sonic
+palette, materials, and product directions. For brand and product
+design work, where you want a creative brief, not a description.
 
-For brand experience, product design, and creative direction work.
+## What you get
 
-## What it does
-
-You drag a handful of images into Claude (or paste a public board URL)
-and ask for a mood unpack. Instead of a list of "what's on the board,"
-you get a creative brief that names the world the references live
-inside and gives you concrete next moves.
-
-Example output structure:
+Drag 4–20 images into a Claude chat, ask for a mood unpack, and you'll
+get something like this:
 
 ```
-WORLD               (a 2–3 sentence scene)
-MOOD ADJECTIVES     (5–8, banned corporate-deck words)
-HASHTAGS            (5–8, lowercase, including aesthetic-movement tags)
-COLOR THEME         (named — "Bleached Coast" not "Warm Neutrals")
-SONIC PALETTE       (specific sounds + 2–3 reference artists)
+WORLD
+A sun-warmed coastal villa, late afternoon. Linen curtains drift in
+salt air. Time feels paused — someone has just stepped out for olives.
+
+MOOD ADJECTIVES
+unhurried · sun-soaked · monastic · salt-bleached · generous · grounded
+
+HASHTAGS
+#slowliving #wabisabi #linenandlimestone #earthtoned #coastalminimal
+#mediterraneanmodern
+
+COLOR THEME — "Bleached Coast"
+sand #E8DCC8 · terracotta #C97B4F · olive shadow #5C6B4A · bone #F5EFE3
+· inkblue accent #2A3A4E
+
+SONIC PALETTE
+- Distant cicadas, low and continuous
+- Linen rustling against itself
+- A single ceramic mug set on tile
+- One nylon-string guitar, very far away
+References: Nils Frahm "Says", Khruangbin, Greek summer field recordings
+
 MATERIALS & TEXTURES
-SENSES BEYOND VISION (touch, smell, weight…)
-PRODUCT / BRAND DIRECTIONS (packaging · voice · what to avoid)
+lime-washed plaster · rough linen · unglazed terracotta · weathered teak
+· hammered brass
+
+SENSES BEYOND VISION
+- Warmth on stone, slightly cooler shade
+- Faint olive oil and dried thyme
+- Pleasingly heavy ceramics
+
+PRODUCT / BRAND DIRECTIONS
+- Packaging: matte recycled paperboard, deep terracotta print, no gloss
+- Voice: short sentences. Confident, generous, never urgent.
+- Avoid: chrome, neon, sans-serifs that look "tech"
+
 ADJACENT MOODS TO EXPLORE NEXT
+- Monastic — strip ornament, push toward rule and repetition
+- Agrarian — dirt, baskets, ledger paper, working hands
+- Taverna — louder, communal, candlelit, less restraint
 ```
+
+You can paste this into a brief, feed the COLOR THEME into Midjourney,
+or hand it to a creative team.
 
 ## Install
 
-The skill is a single markdown file. Pick the path that matches how you
-use Claude:
-
-### Claude Desktop or Claude Code (CLI)
+### Claude Desktop or Claude Code
 
 ```bash
 mkdir -p ~/.claude/skills/moodboard-unpack
 cp moodboard-unpack/SKILL.md ~/.claude/skills/moodboard-unpack/
 ```
 
-That's it. No restart needed — Claude reads the skill on each new
-conversation.
+No restart needed.
 
 ### Claude.ai (web)
 
-Go to **Settings → Capabilities → Skills → Create new skill** and paste
-the contents of `moodboard-unpack/SKILL.md`.
+Settings → Capabilities → Skills → **Create new skill** → paste the
+contents of `moodboard-unpack/SKILL.md`.
 
 ## Use
 
-In any new Claude conversation:
+Open any new Claude conversation and either:
 
-**Best path** — drag images in:
-1. Save 4–20 pins to your desktop (or screenshot the board)
-2. Drag them into a Claude chat
-3. Type something like *"Unpack this for product packaging"* or *"Give
-   me a moodboard brief"*
+- **Drag images in** (best). Save 4–20 pins from a Pinterest board to
+  your desktop, drop them in, and ask: *"Unpack this for product
+  packaging."* The focus is optional.
+- **Paste a public board URL**. Claude will try to fetch it; Pinterest's
+  HTML is sparse so this sometimes returns too little — if so, drag the
+  images in instead.
 
-**Alternative** — paste a URL:
+That's it. Skill triggers on phrases like *unpack*, *moodboard*,
+*what's the vibe*, *give me a brief*.
+
+## Share
+
+The skill is one markdown file. Send it to a friend, or point them at
+this repo. No accounts, no auth, no hosting. They drop it in and it
+works.
+
+## What's in this repo
+
 ```
-Unpack this Pinterest board: https://www.pinterest.com/<user>/<board>/
+moodboard-unpack/SKILL.md   # the skill itself
+README.md                   # this file
 ```
 
-Claude will try to fetch the page. Pinterest renders client-side so this
-sometimes returns too little — if so, just drag the images in instead.
-
-The skill optionally asks once if you have a *focus* (e.g. "product
-packaging," "café interior," "music video"). Provide one for a slanted
-brief, skip it for a general read.
-
-## Why a skill, not a connector
-
-This started as an MCP connector with full Pinterest API integration
-(see `git log` for the archived implementation). The connector worked,
-but distribution friction was high — every user needed Node, a Pinterest
-developer app, and an OAuth flow. For a tool whose value is in the
-*synthesis*, not the API plumbing, a skill is dramatically simpler:
-one markdown file, no install dependencies, works for anyone.
-
-## Sharing
-
-The skill is a single file. To share with someone:
-
-- **Send them the file** (`moodboard-unpack/SKILL.md`) and one line of
-  install instructions, or
-- **Point them at this repo**
-
-No accounts, no auth, no hosting. They drop it in and it works.
-
-## License
-
-MIT.
+The git history also contains an earlier MCP-connector implementation
+(`git log` to see). It worked, but required Node + a Pinterest developer
+account + OAuth — too much friction for the value. The skill keeps the
+useful 90% (the synthesis) and drops the painful 10% (the API plumbing).
