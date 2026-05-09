@@ -1,172 +1,93 @@
-# pinterest-mcp
+# moodboard-unpack
 
-An MCP server that connects Pinterest to Claude for mood-board analysis.
-Hand Claude a board ID and it can describe the visual theme, extract a
-color palette, and reason about individual pins as images.
+A Claude skill that turns a mood board, Pinterest board, or set of
+visual references into a structured brand-experience brief — *world*,
+mood adjectives, hashtags, named color theme, sonic palette, materials,
+and product/brand directions.
 
-## What it gives Claude
+For brand experience, product design, and creative direction work.
 
-| Tool | What it does |
-| --- | --- |
-| `list_boards` | All boards owned by the authenticated user. |
-| `get_board` | Board metadata + every pin (pagination handled internally). |
-| `get_pin_images` | Pin images returned as MCP image blocks so Claude can see them. |
-| `extract_palette` | Dominant colors per pin + an aggregate palette across pins. |
-| `board_brief` | One call: metadata + palette + thumbnails for theme analysis. |
+## What it does
 
-## Quickstart
+You drag a handful of images into Claude (or paste a public board URL)
+and ask for a mood unpack. Instead of a list of "what's on the board,"
+you get a creative brief that names the world the references live
+inside and gives you concrete next moves.
 
-Requires Node 20+.
+Example output structure:
 
-### 1. Create a Pinterest app
+```
+WORLD               (a 2–3 sentence scene)
+MOOD ADJECTIVES     (5–8, banned corporate-deck words)
+HASHTAGS            (5–8, lowercase, including aesthetic-movement tags)
+COLOR THEME         (named — "Bleached Coast" not "Warm Neutrals")
+SONIC PALETTE       (specific sounds + 2–3 reference artists)
+MATERIALS & TEXTURES
+SENSES BEYOND VISION (touch, smell, weight…)
+PRODUCT / BRAND DIRECTIONS (packaging · voice · what to avoid)
+ADJACENT MOODS TO EXPLORE NEXT
+```
 
-1. Visit <https://developers.pinterest.com/apps/> and create an app.
-2. Add `http://localhost:3000/callback` to the app's redirect URIs.
-3. Copy the **App ID** and **App secret key**.
+## Install
 
-### 2. Install
+The skill is a single markdown file. Pick the path that matches how you
+use Claude:
+
+### Claude Desktop or Claude Code (CLI)
 
 ```bash
-git clone <this-repo> pinterest-mcp
-cd pinterest-mcp
-npm install
-cp .env.example .env
+mkdir -p ~/.claude/skills/moodboard-unpack
+cp moodboard-unpack/SKILL.md ~/.claude/skills/moodboard-unpack/
 ```
 
-Open `.env` and paste your App ID into `PINTEREST_CLIENT_ID` and your
-secret key into `PINTEREST_CLIENT_SECRET`. Leave the three token lines
-blank — the next step fills them in.
+That's it. No restart needed — Claude reads the skill on each new
+conversation.
 
-### 3. Authorize
+### Claude.ai (web)
 
-```bash
-npm run auth
+Go to **Settings → Capabilities → Skills → Create new skill** and paste
+the contents of `moodboard-unpack/SKILL.md`.
+
+## Use
+
+In any new Claude conversation:
+
+**Best path** — drag images in:
+1. Save 4–20 pins to your desktop (or screenshot the board)
+2. Drag them into a Claude chat
+3. Type something like *"Unpack this for product packaging"* or *"Give
+   me a moodboard brief"*
+
+**Alternative** — paste a URL:
+```
+Unpack this Pinterest board: https://www.pinterest.com/<user>/<board>/
 ```
 
-A browser tab opens, you click "Approve" on Pinterest, and the script
-writes the access + refresh tokens back to `.env`. Scopes requested:
-`boards:read`, `pins:read`.
+Claude will try to fetch the page. Pinterest renders client-side so this
+sometimes returns too little — if so, just drag the images in instead.
 
-The server auto-refreshes the access token when it expires and persists
-the new one to `.env`. You only run `npm run auth` once.
+The skill optionally asks once if you have a *focus* (e.g. "product
+packaging," "café interior," "music video"). Provide one for a slanted
+brief, skip it for a general read.
 
-### 4. Build
+## Why a skill, not a connector
 
-```bash
-npm run build
-```
+This started as an MCP connector with full Pinterest API integration
+(see `git log` for the archived implementation). The connector worked,
+but distribution friction was high — every user needed Node, a Pinterest
+developer app, and an OAuth flow. For a tool whose value is in the
+*synthesis*, not the API plumbing, a skill is dramatically simpler:
+one markdown file, no install dependencies, works for anyone.
 
-### 5. Wire into Claude Desktop
+## Sharing
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`
-(macOS) or the equivalent on Windows/Linux, and add an `mcpServers`
-entry:
+The skill is a single file. To share with someone:
 
-```json
-{
-  "mcpServers": {
-    "pinterest": {
-      "command": "node",
-      "args": ["/absolute/path/to/pinterest-mcp/dist/server.js"]
-    }
-  }
-}
-```
+- **Send them the file** (`moodboard-unpack/SKILL.md`) and one line of
+  install instructions, or
+- **Point them at this repo**
 
-If the file already has other keys (like `preferences`), keep them and
-add `mcpServers` alongside. Restart Claude Desktop fully (Cmd-Q on macOS)
-for it to pick up the change.
-
-### Try it
-
-Ask Claude:
-
-> List my Pinterest boards, then run `board_brief` on the most
-> interesting one and tell me what visual theme ties it together.
-
-## Project layout
-
-```
-src/
-  server.ts          # MCP entry (stdio transport)
-  pinterest.ts       # API v5 client — pagination, token refresh
-  palette.ts         # sharp-based color extraction
-  tools/
-    list_boards.ts
-    get_board.ts
-    get_pin_images.ts
-    extract_palette.ts
-    board_brief.ts
-scripts/
-  auth.ts            # one-shot OAuth flow on :3000
-.env.example
-```
-
-## How it works
-
-- **OAuth**: standard authorization-code flow against Pinterest API v5.
-  `scripts/auth.ts` is a self-contained Express server that handles the
-  redirect, exchanges the code, and writes tokens to `.env`. Refresh is
-  handled inline by the client on 401 (or proactively when the token's
-  TTL has passed).
-- **Pagination**: Pinterest uses `bookmark` cursors. The client iterates
-  internally so tools always return the full list.
-- **Images for Claude**: `get_pin_images` and `board_brief` resize images
-  to a 1568px max edge and re-encode as JPEG at q=85 before returning
-  them as MCP image blocks. This stays inside Claude's vision input
-  limits without forcing the user to think about it.
-- **Palette extraction**: sharp resizes each image to a 100px sample,
-  bucket-quantizes to 4 bits/channel, merges near-duplicate buckets, and
-  ranks by frequency. The board-level aggregate weights each pin equally
-  so one busy image can't dominate.
-
-## Dev commands
-
-```bash
-npm run auth        # one-shot OAuth flow
-npm run dev         # run server with tsx (no build needed)
-npm run build       # compile to dist/
-npm run typecheck   # tsc --noEmit
-npm start           # run built dist/server.js
-```
-
-## Limitations
-
-- This is a **local stdio MCP server** — it runs on your machine and
-  reads from your `.env`. To share it with someone else, they'd need to
-  go through the same setup (their own Pinterest app, their own OAuth
-  flow). See [Public distribution](#public-distribution) below for paths
-  to making it shareable.
-- Read-only. The `pins:write` and `boards:write` scopes aren't
-  requested — Claude can analyze your boards but not modify them.
-- Pinterest's API rate limit is 1000 requests/hour per token. A
-  `board_brief` on a 12-pin board uses ~14 API requests; image fetches
-  hit Pinterest's CDN and don't count against that limit.
-
-## Public distribution
-
-This README's setup works for you locally but is too involved to ship to
-non-technical users. Two realistic paths to making this a connector
-other people can install:
-
-### Desktop Extension (.dxt)
-
-Bundle the server, dependencies, and a manifest into a single `.dxt`
-file. Users download it and double-click inside Claude Desktop to
-install. They still need to provide their own Pinterest app credentials
-(Pinterest doesn't allow embedding secrets in distributables), but the
-Node / build / config-edit steps go away. See
-<https://www.anthropic.com/engineering/desktop-extensions>.
-
-### Remote MCP connector
-
-Rewrite the transport from stdio to streamable HTTP, host it (Cloudflare
-Workers, fly.io, Vercel), and store per-user tokens in a DB. Get the
-Pinterest app approved for production so a single app can serve any
-user. End users then click "Connect Pinterest" inside Claude.ai — no
-install, no config file, no per-user OAuth app. This is what mature
-connectors (Linear, Asana, Google Drive) look like. The biggest cost is
-Pinterest's production-app review, not the code.
+No accounts, no auth, no hosting. They drop it in and it works.
 
 ## License
 
