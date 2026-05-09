@@ -75,6 +75,27 @@ Estimate hex codes from the images. The palette *name* should be a
 phrase that captures the feeling, not just a description.
 (Example: "Bleached Coast" not "Warm Neutrals".)
 
+TYPOGRAPHY
+- Family: <category — humanist serif / geometric sans / grotesk /
+  monospace / display / hand-lettered>, citing 1–2 specific reference
+  faces (e.g. "Söhne", "GT America Mono", "Caslon", "Right Grotesk").
+- Pairing: heading + body in one sentence (e.g. "Tight grotesk display
+  over generous humanist body").
+- Tone: 2–3 adjectives describing the type's voice (e.g. "geometric,
+  industrial, low-contrast" or "humanist, warm, slightly bookish").
+- Avoid: one type direction that would break the world (e.g. "rounded
+  novelty sans," "calligraphic script").
+
+IMAGERY DIRECTION
+- Subject framing: how subjects appear (overhead product shots,
+  environmental portraits, detail macros, candid editorial, etc.).
+- Lighting: natural / studio / golden hour / soft diffuse / harsh
+  raking — one phrase.
+- Treatment: color grade, grain, contrast, saturation in one phrase
+  (e.g. "warm-shifted, low contrast, fine 35mm grain").
+- Composition: density and grid feel (e.g. "asymmetric, generous
+  whitespace" or "dense editorial collage, off-grid").
+
 SONIC PALETTE
 3–5 specific sound elements as a bulleted list. Be concrete (instrument,
 source, environmental sound — not "calming music"). End with a line

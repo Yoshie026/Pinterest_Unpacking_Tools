@@ -37,6 +37,20 @@ COLOR THEME — "Bleached Coast"
 sand #E8DCC8 · terracotta #C97B4F · olive shadow #5C6B4A · bone #F5EFE3
 · inkblue accent #2A3A4E
 
+TYPOGRAPHY
+- Family: humanist serif (Caslon, Lyon Text) paired with a quiet
+  geometric sans (GT America, Söhne)
+- Pairing: airy serif headlines, generous-leading sans body
+- Tone: bookish, unhurried, slightly archival
+- Avoid: rounded novelty sans, calligraphic script
+
+IMAGERY DIRECTION
+- Subject framing: still-life detail crops, half-empty rooms, hands at
+  rest on tables
+- Lighting: late-afternoon natural, soft directional from a window
+- Treatment: warm-shifted, low contrast, fine 35mm grain
+- Composition: asymmetric, generous whitespace, off-grid
+
 SONIC PALETTE
 - Distant cicadas, low and continuous
 - Linen rustling against itself
