@@ -21,7 +21,7 @@ If \`board\` looks like a numeric ID, use it. Otherwise, call
 
 # Step 2 — Fetch
 
-Call \`board_brief\` with \`max_pins: 12, include_thumbnails: true\`.
+Call \`board_brief\` with \`max_pins: 8, include_thumbnails: true\`.
 
 # Step 3 — Respond
 

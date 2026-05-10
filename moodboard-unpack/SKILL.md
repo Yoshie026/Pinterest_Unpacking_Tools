@@ -1,146 +1,195 @@
 ---
 name: moodboard-unpack
-description: Use when the user wants to turn a mood board, Pinterest board, or set of visual references into a structured brand-experience brief — world, mood adjectives, hashtags, named color theme, sonic palette, materials, and product directions. Triggers on phrases like "unpack this board", "moodboard for X", "what's the vibe of these images", "describe this aesthetic", "give me a brief from these refs", or when the user shares a batch of inspirational images and asks for analysis. For brand experience and product design work.
+description: Use when the user wants to abstract a Pinterest board, mood board, or set of visual references into a brainstorming brief — essence, productive tensions, ASCII concept diagram, named color palette, typography, materials, objects, metaphors, search hooks (places/eras/creators), missing elements, and brainstorm provocations. Triggers on "unpack [board name]", "unpack this board", "moodboard for X", "abstract this", "find themes in this board", "what's the vibe", "give me a brief from these refs". For brand experience, product design, and lateral creative thinking.
 ---
 
 # Moodboard Unpack
 
-Turn a set of visual references into a structured brand-experience brief
-that a designer can act on. Don't summarize what's in the images —
-translate them into a *world* the user can step into and develop further.
+Translate a set of visual references into an *abstraction* a designer can
+brainstorm with. Don't describe what's in the images — extract what
+they're *secretly about*. Surface productive tensions, lateral metaphors,
+and concrete handles for finding more references.
 
-## Input
+## Input — three modes
 
-The user will provide one of:
+1. **Pinterest board name or ID.** If the Pinterest Unpacking Connector
+   is installed (tools `list_boards` and `board_brief` are available),
+   use them:
+   - Call `list_boards` if the user gave a name; match the closest one.
+   - Call `board_brief` with `max_pins: 8` to get metadata + thumbnails.
+   - Look at the returned thumbnails as images, read pin
+     titles/descriptions for additional signal.
+   This is the preferred path for any Pinterest board reference. If the
+   connector isn't installed, ask the user to drag pins into the chat
+   instead — don't try to scrape Pinterest URLs (heavy JS, rate-limited).
 
-- **Images dragged into the chat** (best). 4–20 images is ideal. Look at
-  them as a single coherent set, not individual pictures.
-- **A public Pinterest board URL** (e.g. `pinterest.com/<user>/<board>/`).
-  Use WebFetch to load the page and study the visible thumbnails. If
-  Pinterest's HTML is too sparse to extract enough images, say so and
-  ask the user to drag the pins in instead — don't burn turns scraping.
-- **Other URLs**: Are.na channels, Instagram grids, magazine scans on a
-  webpage. Same approach — fetch, look, analyze.
+2. **Images dragged into the chat.** 4–20 images is ideal. Treat them as
+   one coherent set, not individual pictures.
 
-## Before you write the brief
+3. **Other URLs** (Are.na channels, Instagram grids, magazine scans on a
+   webpage). Use WebFetch.
 
-Ask exactly once:
+## Before you write
 
-> Got it. Any focus for this brief? (e.g. product packaging, café
-> interior, editorial photoshoot, brand identity, music video).
-> Skip if you want a general read.
-
-If the user provides a focus, slant the SENSORY DETAILS and
-PRODUCT/BRAND DIRECTIONS sections toward that use case. If they skip,
-proceed without one.
+NO preamble. Don't say "let me check," "I don't have it in front of me
+yet," or "I'll look this up." Just call the tools, look at the images,
+and produce the brief. If the user provided a focus (e.g. "for product
+packaging" or "for editorial photography"), bend PROVOCATIONS and
+ADJACENT WORLDS toward that use case. Otherwise produce a general read.
 
 ## Synthesis principles
 
-- **Specific beats general.** "Sun-bleached terracotta on shaded
-  terrace" beats "warm tones." "Distant cicadas, single ceramic mug
-  set on tile" beats "ambient sounds."
-- **Borrow vocabulary from what you see.** If the images contain
-  hand-lettered signage, use that flavor of language. If they're all
-  industrial steel, write tighter sentences.
-- **Banned words**: "modern," "elevated," "premium," "curated,"
-  "iconic," "timeless," "luxurious," "sophisticated." These are
-  corporate-deck filler. Find the specific word for what you actually
-  see.
-- **The world is the point.** A brief is good when the user could
-  describe the same world to a stranger after reading it. It's bad if
-  it just lists pin contents.
+- **Specific beats general.** "Hammered brass · oil-stained denim" beats
+  "industrial materials." "Naoshima boat sheds" beats "Japan." "1970s
+  Japanese Metabolism" beats "vintage."
+- **Borrow vocabulary from the images.** If the board is hand-lettered
+  signage, use that flavor of language. If it's industrial steel, write
+  tighter sentences.
+- **Banned words**: "modern," "elevated," "premium," "curated," "iconic,"
+  "timeless," "luxurious," "sophisticated," "minimalist." Corporate-deck
+  filler. Find the specific word for what you actually see.
+- **Tensions over coherence.** A board is interesting because of its
+  productive contradictions. Find them. Name them. Don't smooth them
+  into a single neat vibe.
 
 ## Output format
 
-Skip any preamble. Go straight into the brief, using these section
-headers exactly, in this order:
+Skip preamble. Start at ESSENCE. Use these section headers exactly, in
+this order:
 
-```
-WORLD
-A 2–3 sentence scene description. Where are we? Time of day, season,
-scale? What just happened or is about to happen? Write it like the
-opening of a short story, not a brand statement.
+ESSENCE
+One sentence. The irreducible idea. Format: "X meets Y in Z" or "a
+study in <tension>." This is what the board is *secretly* about, not
+what it depicts.
 
-MOOD ADJECTIVES
-5–8 adjectives separated by " · ". Mix expected with surprising.
+TENSIONS
+2–3 productive contradictions. One per line:
+  <thing A>  ⇄  <thing B>
+    one short line on what the contradiction is doing
 
-HASHTAGS
-5–8 lowercase hashtags, space-separated. Include one or two naming an
-aesthetic movement (#wabisabi, #brutalism, #cottagecore, #y2k,
-#solarpunk, etc.) and the rest specific to this set.
+CONCEPT DIAGRAM
+A small ASCII diagram (5–10 lines) showing the structural relationship.
+Use spectrums, arrows, boxes — whatever fits. Examples:
 
-COLOR THEME — "<2–3 word evocative palette name>"
-4–6 most defining swatches as `<color name> <hex>`, separated by " · ".
-Estimate hex codes from the images. The palette *name* should be a
-phrase that captures the feeling, not just a description.
-(Example: "Bleached Coast" not "Warm Neutrals".)
+  RIGID  ─────×─────  FLOWING
+
+  or:
+
+  [ chrome ] ──reflects──▶ [ world ]
+        ▲                       │
+        └── corrodes into ◀─────┘
+
+  or a 2×2:
+
+           +mass
+            │
+  −polish ──┼── +polish
+            │
+           −mass
+
+PALETTE — <evocative 2–3 word name>
+4–6 swatches estimated from the images. Format:
+`<color name> #HEX` · `<color name> #HEX` · …
+The palette name is a phrase that names the feeling ("Burnt Mirror"),
+not a description ("Cool Greys").
 
 TYPOGRAPHY
-- Family: <category — humanist serif / geometric sans / grotesk /
-  monospace / display / hand-lettered>, citing 1–2 specific reference
-  faces (e.g. "Söhne", "GT America Mono", "Caslon", "Right Grotesk").
-- Pairing: heading + body in one sentence (e.g. "Tight grotesk display
-  over generous humanist body").
-- Tone: 2–3 adjectives describing the type's voice (e.g. "geometric,
-  industrial, low-contrast" or "humanist, warm, slightly bookish").
-- Avoid: one type direction that would break the world (e.g. "rounded
-  novelty sans," "calligraphic script").
+- Family: 2 named typefaces — a heading face and a body face.
+  Be specific (e.g. "GT America Mono / Söhne Buch," "Right Grotesk +
+  Caslon Italic"), not categories ("geometric sans").
+- Tone: 2–3 adjectives describing the type's voice.
+- Avoid: one type direction that would break the world.
 
-IMAGERY DIRECTION
-- Subject framing: how subjects appear (overhead product shots,
-  environmental portraits, detail macros, candid editorial, etc.).
-- Lighting: natural / studio / golden hour / soft diffuse / harsh
-  raking — one phrase.
-- Treatment: color grade, grain, contrast, saturation in one phrase
-  (e.g. "warm-shifted, low contrast, fine 35mm grain").
-- Composition: density and grid feel (e.g. "asymmetric, generous
-  whitespace" or "dense editorial collage, off-grid").
+MATERIALS
+4–6 specific textures or surfaces, separated by " · ". Touchable and
+namable. Pick the kind of material a fabricator could quote you a
+price for. No generic words like "textured," "matte," "industrial."
+
+OBJECTS
+3–5 specific artifacts that belong in this world. Choose objects that
+*embody* the essence rather than illustrate it. Surprising over
+obvious. Format: noun + qualifier, one per bullet.
+
+MOOD ADJECTIVES
+5–8 adjectives separated by " · ". Mix expected with surprising. Skip
+generic words ("beautiful," "elegant," "modern").
+
+HASHTAGS
+5–8 lowercase hashtags space-separated. Include 1–2 naming an aesthetic
+movement (#wabisabi, #brutalism, #y2k, #solarpunk, etc.) and the rest
+specific to this set.
 
 SONIC PALETTE
-3–5 specific sound elements as a bulleted list. Be concrete (instrument,
+3–5 specific sound elements as a bulleted list. Concrete (instrument,
 source, environmental sound — not "calming music"). End with a line
 "References:" naming 2–3 artists, albums, or recording types the user
 could search.
 
-MATERIALS & TEXTURES
-4–6 cues separated by " · " (e.g. "lime-washed plaster · rough linen ·
-unglazed terracotta · weathered teak").
+METAPHORS
+Three different lenses on this board, each one phrase:
+- If this board were a sound: …
+- If this board were a creature/entity: …
+- If this board were a place: …
+Pick unexpected pairings.
 
-SENSES BEYOND VISION
-3 short bullets covering touch, smell, and one other (taste, weight,
-temperature, ambient sound). One sensory image each, no explanation.
+SEARCH HOOKS
+Concrete handles the user can paste into Pinterest, Are.na, or Google
+Images to find more references. Be specific. "Neighborhoods, not
+countries. Decades, not 'vintage.' Named individuals, not 'a
+photographer.'"
+- Places: 3–4 specific locations (e.g. "Naoshima boat sheds," "Kowloon
+  Walled City," "Marfa, TX").
+- Eras / movements: 2–3 named cultural moments (e.g. "1970s Japanese
+  Metabolism," "early-2000s blogspot dark academia," "post-Soviet
+  Brutalism").
+- Creators: 2–3 specific photographers, designers, directors, or artists
+  whose work hits the same nerve (e.g. "Hiroshi Sugimoto," "Naoto
+  Fukasawa," "Roni Horn").
+- Queries: 2–3 search strings tuned to surface non-obvious results.
 
-PRODUCT / BRAND DIRECTIONS
-- Packaging or physical-form direction (one sentence)
-- Voice/tone direction (one sentence)
-- One thing to AVOID (one sentence — what would break the world)
+WHAT'S NOT HERE (but probably should be)
+3 missing elements that would deepen or complete the world. Force
+lateral thinking — pick things the board wouldn't think to include.
 
-ADJACENT MOODS TO EXPLORE NEXT
-3 named directions, each with a one-line "why" — adjacent worlds to push
-the user's thinking outward, not variations of the same set.
-```
+PROVOCATIONS
+5 open brainstorm questions (not yes/no). Push the user's thinking
+outward. Examples (don't copy — generate fresh for this board):
+- What's the smallest object that captures this whole vibe?
+- What's the luxury version vs. the poverty version of this aesthetic?
+- What sound enters the room when this material is touched?
+- What would 100 years of weathering do to this?
+- What would offend this board?
 
-## After delivering the brief
-
-End with one short follow-up question that pushes the work forward, e.g.:
-
-- "Want me to push any of the adjacent moods into a full second brief?"
-- "Want me to translate the COLOR THEME into a Midjourney prompt or a
-  Figma palette?"
-- "Want a tighter version of this for a one-page deck?"
-
-Pick whichever feels most useful given the user's stated focus.
+ADJACENT WORLDS
+3 lateral directions, each as one short phrase + a one-line "why this
+opens new ground." Pick worlds that share an underlying principle but
+look completely different from this one. Avoid variations of the same
+vibe.
 
 ## Edge cases
 
+- **Pinterest connector not installed**: do NOT try to scrape Pinterest
+  via WebFetch (heavy JS, rate-limited). Tell the user to either install
+  the Pinterest Unpacking Connector or drag pins into the chat as images.
+- **Pinterest auth expired**: connector tools will fail with a 401-style
+  error. Tell the user to reconnect Pinterest in Claude's connector
+  settings, or to drag pins in instead. Don't keep retrying.
 - **Mixed/incoherent images**: if the references don't form a single
-  world, say so and ask the user to either pick a subset or commit to
-  one of the directions you can see. Don't fake coherence.
-- **Too few images** (1–2): you can still attempt the brief but flag
-  that the read is thin. Encourage adding more references.
-- **NSFW/violent images**: decline politely, suggest they share the
-  aesthetic references that *aren't* NSFW.
-- **Pinterest URL won't load**: don't retry more than once. Ask for
-  dragged-in images. Pinterest aggressively rate-limits/JS-renders.
-- **Color hex codes are estimates** — note this once at the end of the
-  COLOR THEME section if asked, otherwise just give your best read.
+  world, say so and ask the user to pick a subset or commit to one
+  direction. Don't fake coherence.
+- **Too few images** (1–2): attempt the brief but flag that the read
+  is thin and could change with more references.
+- **Color hex codes are estimates** from thumbnails — note this once if
+  the user asks for exact codes.
+- **NSFW/violent images**: decline politely.
+
+## After delivering the brief
+
+End with one short follow-up that pushes the work forward. Pick
+whichever feels most useful given the board:
+
+- "Want me to push any of the ADJACENT WORLDS into a fresh unpack?"
+- "Want a Midjourney prompt distilled from the ESSENCE?"
+- "Want to translate the PALETTE into a Figma color set or hex export?"
+- "Want a tighter one-page version of this for a deck?"
+- "Want me to riff on any of the PROVOCATIONS specifically?"

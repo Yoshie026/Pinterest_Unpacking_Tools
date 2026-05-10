@@ -38,10 +38,28 @@ export interface Board {
   follower_count: number;
   privacy: string;
   created_at: string | null;
+  /** Pinterest's auto-generated cover thumbnail (~400x300). */
+  cover_url: string | null;
 }
 
 interface RawPinMedia {
   images?: Record<string, { url: string; width: number; height: number }>;
+}
+
+interface RawBoardMedia {
+  image_cover_url?: string;
+  pin_thumbnail_urls?: string[];
+}
+
+interface RawBoard {
+  id: string;
+  name: string;
+  description?: string | null;
+  pin_count: number;
+  follower_count: number;
+  privacy: string;
+  created_at?: string | null;
+  media?: RawBoardMedia;
 }
 
 interface RawPin {
@@ -224,14 +242,15 @@ export class PinterestClient {
   async listBoards(): Promise<Board[]> {
     const out: Board[] = [];
     const q = new URLSearchParams({ page_size: "100" });
-    for await (const b of this.paginate<Board>("/boards", q)) {
-      out.push(b);
+    for await (const raw of this.paginate<RawBoard>("/boards", q)) {
+      out.push(normalizeBoard(raw));
     }
     return out;
   }
 
   async getBoard(boardId: string): Promise<Board> {
-    return this.request<Board>(`/boards/${encodeURIComponent(boardId)}`);
+    const raw = await this.request<RawBoard>(`/boards/${encodeURIComponent(boardId)}`);
+    return normalizeBoard(raw);
   }
 
   async getBoardPins(boardId: string): Promise<Pin[]> {
@@ -283,9 +302,25 @@ function normalizePin(raw: RawPin): Pin {
     // Pick sizes that are already Claude-friendly (no need to resize locally).
     // ~1024px max edge fits comfortably in vision input limits.
     image: pickImage(raw.media, ["1200x", "736x", "600x", "originals"]),
-    thumbnail: pickImage(raw.media, ["600x", "474x", "236x"]),
+    // Pin thumbnails get returned to Claude as image blocks. Tool results
+    // have a 1MB cap, so prefer the smallest legible size — Pinterest's
+    // 236x is a few KB; 600x is 80–150 KB.
+    thumbnail: pickImage(raw.media, ["236x", "150x150", "474x"]),
     dominant_color: raw.dominant_color ?? null,
     created_at: raw.created_at ?? null,
+  };
+}
+
+function normalizeBoard(raw: RawBoard): Board {
+  return {
+    id: raw.id,
+    name: raw.name,
+    description: raw.description ?? null,
+    pin_count: raw.pin_count,
+    follower_count: raw.follower_count,
+    privacy: raw.privacy,
+    created_at: raw.created_at ?? null,
+    cover_url: raw.media?.image_cover_url ?? null,
   };
 }
 

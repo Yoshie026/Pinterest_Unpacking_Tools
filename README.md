@@ -1,173 +1,166 @@
 # moodboard-unpack
 
-Turn a Pinterest board (or any set of visual references) into a
-structured brand-experience brief — *world*, mood, named color theme,
-sonic palette, materials, and product directions. For brand and product
-design work where you want a creative brief, not a description.
+A Claude tool for designers. Hand it a Pinterest board (or a pile of
+saved images) and it returns the board's *essence* — not what's on it,
+but what it's **secretly about**. The output is a structured brief you
+can paste into a creative deck, brand doc, or AI image prompt.
 
-Two ways to use it:
+It's for the moment between *"I have references"* and *"I have a
+direction."*
 
-| | **Skill** | **Connector** |
-|---|---|---|
-| Setup | Copy 1 file | Install a `.dxt`, paste 1 token |
-| Input | Drag images in | Type `/unpack <board-name>` |
-| Pinterest API | No | Yes — auto-fetches your boards |
-| Works in | Claude.ai, Desktop, Code | Claude Desktop only |
-| Friction | Zero | 5 minutes once |
-
-Pick the skill if you want to share it widely. Pick the connector if you
-want to type a board name and have it just work.
-
----
-
-## Example output
+## What you get
 
 ```
-WORLD
-A sun-warmed coastal villa, late afternoon. Linen curtains drift in
-salt air. Time feels paused — someone has just stepped out for olives.
+ESSENCE
+A study in the bureaucratic sublime — institutional documentation
+meets quiet wonder.
 
-MOOD ADJECTIVES
-unhurried · sun-soaked · monastic · salt-bleached · generous · grounded
+TENSIONS
+Cold spec sheet ⇄ Warm artefact
+  clinical forms carrying romantic content; the mundane made monumental.
+Catalogued ⇄ Unknowable
+  everything labelled, nothing fully explained.
 
-HASHTAGS
-#slowliving #wabisabi #linenandlimestone #earthtoned #coastalminimal
+CONCEPT DIAGRAM
+        DOCUMENTED
+            │
+ STERILE ───┼─── POETIC
+   (Apollo  │   (Star Field
+   flight   │    stamp)
+   plan)    │
+       UNDOCUMENTED
 
-COLOR THEME — "Bleached Coast"
-sand #E8DCC8 · terracotta #C97B4F · olive shadow #5C6B4A · bone #F5EFE3
-· inkblue accent #2A3A4E
+PALETTE — "Filed Under Green"
+ledger cream #F4EFE2 · stamp red #C8412A · platform green #0E8A3C ·
+steel grey #8E9591 · carbon black #161616 · folder kraft #B8A57E
 
 TYPOGRAPHY
-- Family: humanist serif (Caslon, Lyon Text) paired with a quiet
-  geometric sans (GT America, Söhne)
-- Pairing: airy serif headlines, generous-leading sans body
-- Tone: bookish, unhurried, slightly archival
-- Avoid: rounded novelty sans, calligraphic script
-
-IMAGERY DIRECTION
-- Subject framing: still-life detail crops, half-empty rooms, hands at
-  rest on tables
-- Lighting: late-afternoon natural, soft directional from a window
-- Treatment: warm-shifted, low contrast, fine 35mm grain
-- Composition: asymmetric, generous whitespace, off-grid
+- Family: Argile Grotesk / Söhne Mono
+- Tone: forensic, dignified, slightly square-shouldered
+- Avoid: humanist serifs with calligraphic flourish
 
 SONIC PALETTE
-- Distant cicadas, low and continuous
-- Linen rustling against itself
-- A single ceramic mug set on tile
-References: Nils Frahm "Says", Khruangbin, Greek summer field recordings
+- Reel-to-reel tape hum, fluorescent ballast buzz
+- Mechanical typewriter strikes spaced over silence
+References: Boards of Canada — Geogaddi; Mark Fell — Multistability
 
-MATERIALS & TEXTURES
-lime-washed plaster · rough linen · unglazed terracotta · weathered teak
+SEARCH HOOKS — for finding more references
+- Places: Hamburg HafenCity U-Bahn · Tsukiji wholesale ticket booths ·
+  Brasília Esplanada ministries
+- Eras: 1970s Japanese stamp design · East German VEB technical graphics
+- Creators: Yusaku Kamekura · Massimo Vignelli · Karel Martens
 
-SENSES BEYOND VISION
-- Warmth on stone, slightly cooler shade
-- Faint olive oil and dried thyme
-- Pleasingly heavy ceramics
-
-PRODUCT / BRAND DIRECTIONS
-- Packaging: matte recycled paperboard, terracotta print, never gloss
-- Voice: short sentences. Confident, generous, never urgent.
-- Avoid: chrome, neon, sans-serifs that look "tech"
-
-ADJACENT MOODS TO EXPLORE NEXT
-- Monastic — strip ornament, push toward rule and repetition
-- Agrarian — dirt, baskets, ledger paper, working hands
-- Taverna — louder, communal, candlelit
+…plus WORLD, MOOD ADJECTIVES, HASHTAGS, MATERIALS, OBJECTS, METAPHORS,
+WHAT'S NOT HERE, PROVOCATIONS, ADJACENT WORLDS.
 ```
 
----
+Real output from a board called `ontrep_ref` (an archival print site
+mood board). Not generic — picks up specifics like *Hamburg HafenCity
+U-Bahn* and *Yusaku Kamekura* because the board contained signals
+pointing there.
 
-## Path A — Skill (no install)
+## What's it for?
 
-### Install
+- **Brand briefs.** Translate a vague mood into hex codes, named
+  typefaces, and material vocabulary you can hand to a team.
+- **Live performance / set design.** Run with `focus: live visuals` and
+  the OBJECTS / SONIC PALETTE / ADJACENT WORLDS sections bend toward
+  staging.
+- **AI prompting.** Feed the ESSENCE + PALETTE into Midjourney or
+  Sora as a base prompt, then iterate.
+- **Brainstorming.** The PROVOCATIONS section is 5 questions written
+  to push you sideways, not forward.
+- **Reference hunting.** SEARCH HOOKS gives you specific neighborhoods,
+  decades, and named photographers to paste into Pinterest, Are.na, or
+  Google Images.
 
-**Claude Desktop / Claude Code:**
+## How to install
 
-```bash
-mkdir -p ~/.claude/skills/moodboard-unpack
-cp moodboard-unpack/SKILL.md ~/.claude/skills/moodboard-unpack/
-```
+Two paths. Pick **one**.
 
-**Claude.ai (web):** Settings → Capabilities → Skills → Create new skill
-→ paste contents of `moodboard-unpack/SKILL.md`.
+### → Path A: I just want to drop in images and get a brief
 
-### Use
+Works in **any Claude** — Desktop, web, mobile. No API setup.
 
-In any new Claude chat:
+1. Download [`SKILL.md`](moodboard-unpack/SKILL.md) from this repo.
+2. Drop it in `~/.claude/skills/moodboard-unpack/SKILL.md` (Claude
+   Desktop / Claude Code), or paste its contents into Claude.ai web
+   under Settings → Capabilities → Skills.
+3. Open a chat. Drag 4–20 images in. Type "*unpack this for product
+   packaging*" (or any phrase like that — *unpack*, *moodboard*,
+   *what's the vibe*).
 
-1. Drag 4–20 images in (Pinterest screenshots, saved pins, anything)
-2. Type *"unpack this for product packaging"* (focus optional)
+That's it.
 
-That's it. Triggers on *unpack*, *moodboard*, *what's the vibe*,
-*give me a brief*.
+### → Path B: I want it to read my Pinterest boards directly
 
----
+Works in **Claude Desktop only**. Installs as an extension.
 
-## Path B — Connector (Pinterest auto-fetch)
+You'll need:
+- A free Pinterest developer account (5 minutes)
+- A Pinterest access token (5 minutes)
+- The `.dxt` file from [Releases](../../releases/latest)
 
-The connector is a Claude Desktop Extension that talks to the Pinterest
-API for you. Once installed, you can refer to boards by name and Claude
-fetches the pins itself.
+**Steps:**
 
-### Install
+1. **Create a Pinterest app**
+   - Go to <https://developers.pinterest.com/apps/> → *Create app*
+   - In the app's settings, add this redirect URI: `http://localhost:3000/callback`
+   - Save the **App ID** and **App secret key**
 
-1. **Get an access token** — go to
-   <https://developers.pinterest.com/apps/> → your app → generate a
-   token with scopes `boards:read,pins:read`. (Or run
-   `cd connector && npm install && npm run auth` if you'd rather use
-   the OAuth flow.)
-2. **Install the extension** — open `connector/pinterest-mcp.dxt` (or
-   build a fresh one with `cd connector && npm run dxt`)
-3. **Paste the token** into the install dialog and click Install
+2. **Get an access token**
+   In the same Pinterest app dashboard, generate a test token with
+   scopes `boards:read` and `pins:read`. Copy it.
 
-### Use
+   *(Alternative if you'd rather use OAuth: `cd connector && npm install
+   && npm run auth` — opens a browser, writes the token to `.env`.)*
 
-In Claude Desktop:
+3. **Install the connector**
+   - Download `pinterest-mcp.dxt` from [Releases](../../releases/latest).
+   - Double-click it. Claude Desktop opens a config window.
+   - Paste your access token. Click Install.
 
-```
-/unpack metal_material_inspo
-```
+4. **Use it**
+   In any Claude Desktop chat:
 
-or natural language:
+   > unpack my metal_material_inspo board
 
-> Unpack my metal_material_inspo board for product packaging
+   or:
 
-The connector also exposes:
+   > unpack ontrep_ref for live performance visuals
 
-- `/board <name>` — quick board view (metadata + thumbnails)
-- Tools: `list_boards`, `get_board`, `get_pin_images`, `board_brief`
-  (if you want to drive things manually)
+   Or if you want to see what boards you have:
 
-The access token lasts ~30 days. When it expires you'll see Pinterest
-errors in chat — get a fresh token and reconfigure the connector.
+   > show me my Pinterest boards
 
----
+   *(Returns a visual grid of every board with its cover image.)*
 
-## Repo layout
+## Tips
 
-```
-moodboard-unpack/
-  SKILL.md            # Path A — the skill
-connector/
-  src/                # Path B — MCP server source
-  manifest.json       # DXT manifest
-  pinterest-mcp.dxt   # Built extension (after `npm run dxt`)
-README.md
-```
+- **Add context after the board name.** *"unpack ontrep_ref I'm
+  working on packaging for a print magazine"* — the brief slants
+  toward your use case.
+- **The PROVOCATIONS section is the point.** It's not summary, it's
+  questions. Sit with them before you read the rest.
+- **SEARCH HOOKS are paste-ready.** Copy a "Place" or a "Creator"
+  straight into Pinterest's search.
+- **Use ADJACENT WORLDS to escape your own taste.** If your brief
+  feels too neat, run the adjacent world that scared you most.
 
-## Sharing
+## When the Pinterest token expires
 
-- **Skill** — send the `SKILL.md` file. Recipient drops it in
-  `~/.claude/skills/moodboard-unpack/`. Done.
-- **Connector** — send the `.dxt` file *plus* tell the recipient to
-  create their own Pinterest app and generate a token. There's no way
-  around per-user Pinterest credentials without hosting a remote MCP
-  server, which costs money.
+Pinterest tokens last ~30 days. When yours dies, you'll see auth errors
+in chat. Generate a new token, then **Settings → Connectors → Pinterest
+Unpacking Connector → Configure** and paste the new one.
 
-For a low-bar public release, the skill is the answer. The connector is
-for power users.
+## Sharing this with someone
+
+- **Skill path** — send them `SKILL.md`. They drop it in their
+  `~/.claude/skills/` folder. Done.
+- **Connector path** — send them this repo's URL. Heads up: they'll
+  need to make their own Pinterest developer app (Pinterest doesn't
+  let me embed credentials in distributed apps).
 
 ## License
 
-MIT.
+[MIT](LICENSE) — do anything you want with it.

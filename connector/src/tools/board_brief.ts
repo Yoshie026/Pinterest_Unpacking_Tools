@@ -13,9 +13,11 @@ export function register(server: McpServer, client: PinterestClient): void {
         .number()
         .int()
         .min(1)
-        .max(40)
-        .default(12)
-        .describe("How many pin thumbnails to include."),
+        .max(20)
+        .default(8)
+        .describe(
+          "How many pin thumbnails to include. Capped low because tool results have a 1MB size limit and each thumbnail is ~10–50KB base64-encoded.",
+        ),
       include_thumbnails: z.boolean().default(true),
     },
     async ({ board_id, max_pins, include_thumbnails }) => {

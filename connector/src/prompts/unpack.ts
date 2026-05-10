@@ -1,113 +1,159 @@
 /**
- * Slash-command prompt: turn a Pinterest board into a structured
- * "mood unpack" — a brand-experience brief, not a data dump.
+ * Slash-command prompt: turn a Pinterest board into an *abstraction*
+ * — not a description.
  *
- * Invocation in Claude:
- *   /unpack board:"metal_material_inspo" focus:"product packaging"
+ * The goal is to help the user brainstorm by surfacing what's *secretly*
+ * going on in the board: the irreducible essence, the productive
+ * tensions, lateral metaphors, what's missing, and questions to push
+ * thinking outward. Output includes a small ASCII concept diagram for
+ * whiteboard-style structural thinking.
  *
- * The `board` argument accepts either a Pinterest board ID (a long
- * numeric string) or a board name — the prompt instructs Claude to
- * resolve the name via `list_boards` if it isn't already an ID.
+ * Invocation in Claude Desktop: type `/`, pick `unpack` from the
+ * autocomplete dropdown, fill in the board field.
  */
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 const SYNTHESIS_BRIEF = `
-You are unpacking a Pinterest mood board into a brand-experience brief
-for a product/brand designer. Translate the board into a *world* the
-user can step into and develop further — don't summarize which pins
-are on it.
+You are an abstraction engine for a brand/product designer brainstorming
+from a Pinterest mood board. Your job is NOT to describe the board.
+Your job is to extract what it's *secretly about* and give the user
+provocations to think with.
 
-# Step 1 — Resolve the board
+# Step 1 — Resolve
 
-If the \`board\` argument looks like a Pinterest board ID (a long
-numeric string with no spaces), use it directly. Otherwise, call
-\`list_boards\` and find the board whose name best matches. If multiple
-match, pick the one with the most pins. If none match, ask the user
-which one they meant — don't guess.
+If \`board\` looks like a numeric Pinterest ID (long digits, no spaces),
+use it directly. Otherwise call \`list_boards\` and match by name. Pick
+the closest match silently — do NOT preface with "let me check" or
+"I'll look this up." Just do it.
 
 # Step 2 — Gather
 
-Call \`board_brief\` with the resolved board_id and \`max_pins: 16\`.
-Look at the returned thumbnails as images, read pin titles/descriptions,
-and use the per-pin \`dominant_color\` values as a starting hint for the
-color theme. You'll estimate the final palette visually from the
-thumbnails — the dominant_color values are just per-pin, not curated.
+Call \`board_brief\` with \`max_pins: 8\`. Look at the thumbnails as
+images. Read pin titles/descriptions for additional signal. The
+\`dominant_color\` field per pin is a starting hint, not the final word.
 
-# Step 3 — Synthesize
+# Step 3 — Output
 
-Return ONLY the structured brief below. No preamble, no "here's what I
-found." Use evocative, specific language — "sun-bleached terracotta on
-shaded terrace" beats "warm tones." Be concrete. Avoid corporate-deck
-adjectives ("modern," "elevated," "premium," "curated"). If a focus is
-given, slant SENSORY DETAILS and PRODUCT DIRECTIONS toward that use case.
+Write the response below directly. NO preamble. NO "here's what I
+found" or "I don't have it yet." Start at "ESSENCE." If a \`focus\` is
+provided, bend PROVOCATIONS and ADJACENT WORLDS toward that use case.
+Be specific and surprising. Avoid corporate-deck adjectives ("modern,"
+"elevated," "premium," "curated," "minimalist," "timeless"). Borrow
+the board's own vocabulary where it fits.
 
-## Output format (use exactly these section headers, in this order)
+## Required output (use these exact section headers, in this order)
 
-WORLD
-A 2–3 sentence scene description. Where are we? What time of day,
-season, scale? What just happened or is about to happen? Write it
-like the opening of a short story, not a brand statement.
+ESSENCE
+One sentence. The irreducible idea. Format: "X meets Y in Z" or
+"a study in <tension>" or "<noun phrase that didn't exist before>."
+This is what the board is *secretly* about, not what it depicts.
 
-MOOD ADJECTIVES
-5–8 adjectives, separated by " · ". Mix expected and surprising. No
-generic words ("beautiful," "elegant," "modern").
+TENSIONS
+2–3 productive contradictions in the board, one per line. These are
+where new ideas live. Format: \`<thing A>  ⇄  <thing B>\` followed by
+one short line on what the contradiction is doing. Example:
+  perfect mirror  ⇄  patina rust
+    flawless surface that earns character only by being ruined
 
-HASHTAGS
-5–8 lowercase hashtags, space-separated. Include one or two that name
-an aesthetic movement (e.g. #wabisabi, #brutalism, #cottagecore) and
-the rest specific to this board.
+CONCEPT DIAGRAM
+A small ASCII diagram (5–10 lines) showing the structural relationship.
+Use spectrums, arrows, boxes — whatever fits. Make it printable and
+useful, not decorative. Example shapes (vary based on the board):
 
-COLOR THEME — "<give the palette a 2–3 word evocative name>"
-List the 4–6 most defining swatches as: \`<color name> <hex>\` separated
-by " · ". Estimate hex codes from the thumbnails. The palette name
-should be a phrase that captures the feeling, not a description
-("Bleached Coast" not "Warm Neutrals").
+  RIGID  ─────×─────  FLOWING        (mark with × where the board sits)
+
+  or:
+
+  [ chrome ] ──reflects──▶ [ world ]
+        ▲                       │
+        └── corrodes into ◀─────┘
+
+  or a 2×2:
+
+           +mass
+            │
+  −polish ──┼── +polish
+            │
+           −mass
+
+PALETTE — <evocative 2–3 word name>
+4–6 swatches, estimated from the thumbnails. Format:
+\`<color name> #HEX\` · \`<color name> #HEX\` · …
+The palette name is a *phrase that names the feeling*, not a description
+("Burnt Mirror" not "Cool Greys").
 
 TYPOGRAPHY
-- Family: type category (humanist serif / geometric sans / grotesk /
-  monospace / display / hand-lettered), citing 1–2 specific reference
-  faces (e.g. "Söhne", "GT America Mono", "Caslon", "Right Grotesk").
-- Pairing: heading + body in one sentence.
-- Tone: 2–3 adjectives describing the type's voice.
-- Avoid: one type direction that would break the world.
+2 named typefaces (a heading face and a body face) plus one line on
+tone, plus one direction to avoid. Be specific — name actual faces
+(e.g. "GT America Mono / Söhne Buch," "Right Grotesk + Caslon Italic"),
+not categories ("geometric sans"). Tone in 2–3 adjectives. The "avoid"
+line names a type direction that would break the world.
 
-IMAGERY DIRECTION
-- Subject framing: how subjects appear (overhead product shots, detail
-  macros, environmental portraits, etc.).
-- Lighting: natural / studio / golden hour / harsh raking — one phrase.
-- Treatment: color grade, grain, contrast, saturation in one phrase.
-- Composition: density and grid feel (e.g. "asymmetric, generous
-  whitespace" or "dense editorial collage").
+MATERIALS
+4–6 specific textures or surfaces, separated by " · ". Touchable and
+namable. Examples: "hammered brass · brushed aluminium · oil-stained
+denim · raw concrete formwork." Avoid generic words like "textured,"
+"matte," "industrial." Pick the kind of material a fabricator could
+quote you a price for.
 
-SONIC PALETTE
-3–5 sound elements as a bulleted list. Be specific (instrument, source,
-or environmental sound — not "calming music"). End with a line
-"References:" naming 2–3 artists, albums, or recording types the user
-could search to hear the world.
+OBJECTS
+3–5 specific artifacts that belong in this world. Choose objects that
+*embody* the essence rather than illustrate it. Surprising over
+obvious. Format: noun + qualifier, one per bullet. Examples (don't
+copy — generate fresh for this board):
+- A single Maglite torch with a dented head
+- A green-glazed Japanese tea bowl, chipped on the rim
+- A 1990s industrial CRT showing a black screen
+- A length of climbing rope, used, faintly chalked
 
-MATERIALS & TEXTURES
-4–6 cues separated by " · " (e.g. "lime-washed plaster · rough linen").
+METAPHORS
+Three completely different lenses on this board, each one phrase:
+- If this board were a sound: …
+- If this board were a creature/entity: …
+- If this board were a place: …
+Pick unexpected pairings. Avoid the obvious.
 
-SENSES BEYOND VISION
-3 short bullets covering touch, smell, and one other (taste, weight,
-temperature, ambient sound). One sensory image each, no explanation.
+SEARCH HOOKS — concrete handles for finding more references
+The user can't generate images; they need search terms to dig further.
+Be specific. "Neighborhoods, not countries. Decades, not 'vintage.'
+Named individuals, not 'a photographer.'"
+- Places: 3–4 specific locations (towns, neighborhoods, buildings,
+  regions, scenes — e.g. "Naoshima boat sheds," "Kowloon Walled City,"
+  "Marfa, TX," not "Japan" or "Asia").
+- Eras / movements: 2–3 named cultural moments (e.g. "1970s Japanese
+  Metabolism," "early-2000s blogspot dark academia," "post-Soviet
+  Brutalism," not "vintage" or "modern").
+- Creators: 2–3 specific photographers, designers, directors, or
+  artists whose work hits the same nerve (e.g. "Hiroshi Sugimoto,"
+  "Naoto Fukasawa," "Roni Horn," not "minimalist photographers").
+- Queries: 2–3 search strings to try on Pinterest, Are.na, or Google
+  Images. Make them specific enough to surface non-obvious results.
 
-PRODUCT / BRAND DIRECTIONS
-3 short bullets a designer can act on:
-- Packaging or physical-form direction (one sentence)
-- Voice/tone direction (one sentence)
-- One thing to avoid (one sentence — say what would break the world)
+WHAT'S NOT HERE (but probably should be)
+3 missing elements that would deepen or complete the world. Force
+lateral thinking — pick things the board wouldn't think to include.
+One short bullet each.
 
-ADJACENT MOODS TO EXPLORE NEXT
-3 named directions, each with a one-line "why" — adjacent worlds to
-push the user's thinking outward, not variations of the same board.
+PROVOCATIONS — 5 questions for the user
+Open questions to push thinking outward, not yes/no questions.
+Examples (don't copy these — generate new ones for this board):
+- What's the smallest object that captures this whole vibe?
+- What's the luxury version vs. the poverty version of this aesthetic?
+- What sound enters the room when this material is touched?
+- What would 100 years of weathering do to this?
+- What would offend this board?
+
+ADJACENT WORLDS — 3 directions to explore next
+Each as one short phrase + a one-line "why this opens new ground."
+Pick worlds that share an underlying principle but look completely
+different from this one. Avoid variations of the same vibe.
 `.trim();
 
 export function register(server: McpServer): void {
   server.prompt(
     "unpack",
-    "Unpack a Pinterest board into a brand-experience brief: world, mood, named color theme, sonic palette, materials, and product directions.",
+    "Abstract a Pinterest board into essence, tensions, a concept diagram, metaphors, missing elements, and brainstorm provocations. Designed for ideation, not summary.",
     {
       board: z
         .string()
@@ -118,7 +164,7 @@ export function register(server: McpServer): void {
         .string()
         .optional()
         .describe(
-          "Optional use-case slant — e.g. 'product packaging', 'editorial photoshoot', 'café interior'.",
+          "Optional use-case slant — e.g. 'product packaging', 'editorial photoshoot', 'café interior'. Bends provocations and adjacent worlds toward this.",
         ),
     },
     ({ board, focus }) => ({
@@ -128,7 +174,7 @@ export function register(server: McpServer): void {
           content: {
             type: "text",
             text: [
-              `Unpack Pinterest board "${board}" into a mood-experience brief.`,
+              `Unpack Pinterest board "${board}" as an abstraction for brainstorming.`,
               focus ? `Focus: ${focus}.` : "",
               "",
               SYNTHESIS_BRIEF,

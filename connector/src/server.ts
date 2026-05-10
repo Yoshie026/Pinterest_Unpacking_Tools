@@ -25,9 +25,11 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 log("mcp sdk loaded");
 import { PinterestClient } from "./pinterest.js";
 import { register as registerListBoards } from "./tools/list_boards.js";
+import { register as registerBrowseBoards } from "./tools/browse_boards.js";
 import { register as registerGetBoard } from "./tools/get_board.js";
 import { register as registerGetPinImages } from "./tools/get_pin_images.js";
 import { register as registerBoardBrief } from "./tools/board_brief.js";
+import { register as registerUnpackBrief } from "./tools/unpack_brief.js";
 import { register as registerUnpackPrompt } from "./prompts/unpack.js";
 import { register as registerBoardPrompt } from "./prompts/board.js";
 log("all modules loaded");
@@ -48,9 +50,11 @@ async function main(): Promise<void> {
   log("McpServer instantiated");
 
   registerListBoards(server, client);
+  registerBrowseBoards(server, client);
   registerGetBoard(server, client);
   registerGetPinImages(server, client);
   registerBoardBrief(server, client);
+  registerUnpackBrief(server, client);
   registerUnpackPrompt(server);
   registerBoardPrompt(server);
   log("tools and prompts registered");

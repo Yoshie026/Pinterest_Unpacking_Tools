@@ -1,0 +1,52 @@
+name: release
+
+# Builds the .dxt and attaches it to a GitHub Release whenever you push
+# a tag like `v0.1.0`. Users then download a single .dxt file — they
+# never need to clone the repo or run npm.
+#
+# To cut a release locally:
+#   git tag v0.1.0
+#   git push origin v0.1.0
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: # also lets you trigger manually from the Actions tab
+
+jobs:
+  build-dxt:
+    runs-on: macos-latest
+    permissions:
+      contents: write # needed to create the release + upload assets
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: connector/package-lock.json
+
+      - name: Install connector deps
+        run: npm ci
+        working-directory: connector
+
+      - name: Build TypeScript
+        run: npm run build
+        working-directory: connector
+
+      - name: Build .dxt package
+        run: npm run dxt
+        working-directory: connector
+
+      - name: Verify .dxt exists
+        run: ls -lh connector/pinterest-mcp.dxt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: connector/pinterest-mcp.dxt
+          generate_release_notes: true
+          draft: false
+          prerelease: false
