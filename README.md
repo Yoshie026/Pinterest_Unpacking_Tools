@@ -1,8 +1,8 @@
 # moodboard-unpack
 
-A Claude tool for designers. Hand it a Pinterest board (or a pile of
-saved images) and it returns the board's *essence* — not what's on it,
-but what it's **secretly about**. The output is a structured brief you
+A Claude Desktop extension for designers. Point it at a Pinterest
+board and it returns the board's *essence* — not what's on it, but
+what it's **secretly about**. The output is a structured brief you
 can paste into a creative deck, brand doc, or AI image prompt.
 
 It's for the moment between *"I have references"* and *"I have a
@@ -76,40 +76,18 @@ pointing there.
 
 ## Requirements
 
-- **Claude Desktop** (free download) — Free tier works fine, you'll just
-  hit message limits faster than Pro users.
-- **For Path B only:** a free Pinterest developer account (5 min to set up).
+- **Claude Desktop** (free download) — Free tier works fine, you'll
+  just hit message limits faster than Pro users.
+- A free **Pinterest developer account** (5 min to set up — Pinterest
+  doesn't allow shared credentials, so every user creates their own
+  free dev app. Same friction every Pinterest integration has.)
 
-## How to install
+## Install
 
-Two paths. Pick **one**.
+You'll need three things:
 
-### → Path A: I just want to drop in images and get a brief
-
-Works in **any Claude** — Desktop, web, mobile. No API setup.
-
-1. Download [`SKILL.md`](moodboard-unpack/SKILL.md) from this repo.
-2. Drop it in `~/.claude/skills/moodboard-unpack/SKILL.md` (Claude
-   Desktop / Claude Code), or paste its contents into Claude.ai web
-   under Settings → Capabilities → Skills.
-3. Open a chat. Drag 4–20 images in. Type "*unpack this for product
-   packaging*" (or any phrase like that — *unpack*, *moodboard*,
-   *what's the vibe*).
-
-That's it.
-
-### → Path B: I want it to read my Pinterest boards directly
-
-Works in **Claude Desktop only**. Installs as an extension.
-
-> **Heads up:** Pinterest doesn't allow shared API credentials, so each
-> user creates their own free Pinterest developer app. Takes about 5
-> minutes, browser only — no payment, no review process. This is the
-> same friction every Pinterest integration has (IFTTT, Zapier, etc.).
-
-You'll need:
-- A free Pinterest developer account (5 minutes)
-- A Pinterest access token (5 minutes)
+- A Pinterest developer app *(5 min, browser only)*
+- A Pinterest access token *(5 min, from the app dashboard)*
 - The `.dxt` file from [Releases](../../releases/latest)
 
 **Steps:**
@@ -178,11 +156,10 @@ Unpacking Connector → Configure** and paste the new one.
 
 ## Sharing this with someone
 
-- **Skill path** — send them `SKILL.md`. They drop it in their
-  `~/.claude/skills/` folder. Done.
-- **Connector path** — send them this repo's URL. Heads up: they'll
-  need to make their own Pinterest developer app (Pinterest doesn't
-  let me embed credentials in distributed apps).
+Send them this repo's URL — they download the `.dxt` from Releases
+and follow the install above. Heads up: they'll need to make their
+own free Pinterest developer app (Pinterest doesn't allow shared
+API credentials).
 
 ## License
 
