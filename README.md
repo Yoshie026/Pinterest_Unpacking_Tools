@@ -74,6 +74,12 @@ pointing there.
   decades, and named photographers to paste into Pinterest, Are.na, or
   Google Images.
 
+## Requirements
+
+- **Claude Desktop** (free download) — Free tier works fine, you'll just
+  hit message limits faster than Pro users.
+- **For Path B only:** a free Pinterest developer account (5 min to set up).
+
 ## How to install
 
 Two paths. Pick **one**.
@@ -96,6 +102,11 @@ That's it.
 
 Works in **Claude Desktop only**. Installs as an extension.
 
+> **Heads up:** Pinterest doesn't allow shared API credentials, so each
+> user creates their own free Pinterest developer app. Takes about 5
+> minutes, browser only — no payment, no review process. This is the
+> same friction every Pinterest integration has (IFTTT, Zapier, etc.).
+
 You'll need:
 - A free Pinterest developer account (5 minutes)
 - A Pinterest access token (5 minutes)
@@ -109,11 +120,23 @@ You'll need:
    - Save the **App ID** and **App secret key**
 
 2. **Get an access token**
-   In the same Pinterest app dashboard, generate a test token with
-   scopes `boards:read` and `pins:read`. Copy it.
+   In your Pinterest app dashboard, look for an option to generate an
+   access token (sometimes under *Configuration*, *API access*, or
+   *Trial access*). Pick scopes `boards:read` and `pins:read`. Copy
+   the token — it starts with `pina_…`.
 
-   *(Alternative if you'd rather use OAuth: `cd connector && npm install
-   && npm run auth` — opens a browser, writes the token to `.env`.)*
+   **If you can't find a "generate token" button** (Pinterest's UI
+   shifts around), use the OAuth helper instead:
+   ```bash
+   git clone https://github.com/Yoshie026/Pinterest_Unpacking_Tools
+   cd Pinterest_Unpacking_Tools/connector
+   npm install
+   cp .env.example .env
+   # Open .env, paste your App ID and App secret key into the first two lines
+   npm run auth
+   ```
+   A browser opens, you click *Approve*, and the token is written to
+   `.env`. Copy it from there.
 
 3. **Install the connector**
    - Download `pinterest-mcp.dxt` from [Releases](../../releases/latest).
