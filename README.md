@@ -40,11 +40,6 @@ WHAT'S NOT HERE, PROVOCATIONS, ADJACENT WORLDS
   decades, and named photographers to paste into Pinterest, Are.na, or
   Google Images.
 
-## Requirements
-
-- **Claude Desktop** (free download) — Free tier works fine, you'll just
-  hit message limits faster than Pro users.
-- **For Path B only:** a free Pinterest developer account (5 min to set up).
 
 ## How to install
 
@@ -62,16 +57,6 @@ Works in **any Claude** — Desktop, web, mobile. No API setup.
    packaging*" (or any phrase like that — *unpack*, *moodboard*,
    *what's the vibe*).
 
-That's it.
-
-### → Path B: I want it to read my Pinterest boards directly
-
-Works in **Claude Desktop only**. Installs as an extension.
-
-> **Heads up:** Pinterest doesn't allow shared API credentials, so each
-> user creates their own free Pinterest developer app. Takes about 5
-> minutes, browser only — no payment, no review process. This is the
-> same friction every Pinterest integration has (IFTTT, Zapier, etc.).
 
 You'll need:
 - A free Pinterest developer account (5 minutes)
