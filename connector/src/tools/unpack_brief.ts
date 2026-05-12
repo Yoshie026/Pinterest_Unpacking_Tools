@@ -80,10 +80,17 @@ The palette name is a phrase that names the feeling ("Burnt Mirror"),
 not a description ("Cool Greys").
 
 TYPOGRAPHY
-- Family: 2 named typefaces (heading + body), specific actual faces
-  (e.g. "GT America Mono / Söhne Buch"), not categories.
+Give the user a *menu* of options, not just one pairing. Specific
+named faces only — no categories like "geometric sans."
+- Heading candidates: 3 named typefaces, ranked best-fit first
+  (e.g. "Argile Grotesk · Söhne Halbfett · GT Sectra Display").
+- Body candidates: 3 named typefaces
+  (e.g. "Söhne Buch · Inter · Suisse Int'l Mono").
+- Display / accent (optional): 1–2 wildcards for posters, labels,
+  big type, or special moments (e.g. "ABC Diatype Mono · Untitled
+  Serif").
 - Tone: 2–3 adjectives describing the type's voice.
-- Avoid: one type direction that would break the world.
+- Avoid: 1 type direction that would break the world.
 
 MATERIALS
 4–6 specific textures or surfaces, separated by " · ". Touchable and
@@ -126,11 +133,66 @@ ADJACENT WORLDS
 3 lateral directions, each as one short phrase + a one-line "why."
 Pick worlds that share an underlying principle but look completely
 different.
+
+---
+
+## AFTER the text brief — render a visual artifact
+
+After completing the structured text brief above, ALSO generate a
+self-contained HTML artifact (use Claude's artifact tool with type
+\`text/html\`) that visualizes the brief as a designer moodboard.
+
+Design direction:
+- Dark designer-deck aesthetic. Use the board's own PALETTE for
+  background tinting and accent colors — the artifact should look
+  like the board it came from, not a generic template.
+- Spec-plate header at the top: board name in monospace, plus the
+  ESSENCE as a subtitle.
+- TENSIONS as 3 cards in a row (or stacked on narrow widths).
+- PALETTE as a row of color swatches with hex codes labelled below.
+- TYPOGRAPHY: show the named heading + body faces visually (use
+  close web-font approximations from Google Fonts via <link> tag —
+  e.g. for "Söhne" use "Inter", for "Caslon" use "EB Garamond").
+- MATERIALS and OBJECTS as bulleted cards.
+- CONCEPT DIAGRAM rendered as boxes with arrows (CSS, not ASCII).
+- ADJACENT WORLDS as colored chips/buttons.
+- PROVOCATIONS as a highlighted callout block at the bottom.
+
+Technical requirements:
+- Single self-contained HTML file. Inline CSS only.
+- Web fonts via Google Fonts <link> only — no other external assets.
+- Single column layout, max-width 820px, centered.
+- Dark background, light text. Use the board's PALETTE swatches for
+  accents (border colors, chip backgrounds, highlights).
+
+Export button (mandatory):
+Include a small floating button at the top-right of the artifact:
+
+  <button class="export-btn" onclick="window.print()">
+    ↓ Save as PDF
+  </button>
+
+Style it minimally — small, semi-transparent border, monospace label.
+Position it fixed (top: 16px, right: 16px) so it stays visible as the
+user scrolls. Add inline JS only for the onclick (no external scripts).
+
+Print rules (CSS \`@media print\` block):
+- .export-btn { display: none; }                  /* hide button from PDF */
+- body { background: <dark hex>; color: <light hex>; }
+- * { -webkit-print-color-adjust: exact;
+       print-color-adjust: exact; }               /* keep dark theme in PDF */
+- Every card: page-break-inside: avoid;
+- No fixed positioning, no viewport-relative units that break print.
+
+The result: user clicks "Save as PDF" → browser print dialog →
+"Save as PDF" → clean A4 export with dark theme intact, no button
+visible in the saved file.
 `.trim();
 
 const TRIGGER_DESCRIPTION = [
-  "Unpack a Pinterest board into a structured brainstorming brief —",
-  "essence, tensions, ASCII concept diagram, world, mood adjectives,",
+  "Unpack a Pinterest board into a structured brainstorming brief PLUS",
+  "a visual HTML artifact (designer-deck layout, print-ready as PDF) —",
+  "essence, tensions, concept diagram, world, mood adjectives,",
   "hashtags, named palette, typography, materials, objects, sonic palette,",
   "metaphors, search hooks (places/eras/creators), missing elements, and",
   "provocations.",
