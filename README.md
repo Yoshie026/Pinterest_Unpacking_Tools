@@ -1,5 +1,7 @@
 # moodboard-unpack
 
+![Hero](pinterest_mood_unpacker_hero.png)
+
 A Claude tool for designers. Hand it a Pinterest board (or a pile of
 saved images) and it returns the board's *essence* — not what's on it,
 but what it's **secretly about**. The output is a structured brief you
